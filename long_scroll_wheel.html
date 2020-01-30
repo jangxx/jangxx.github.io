@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Long Scroll</title>
+        <style>
+            body, html {
+                margin: 0px;
+                width: 100vw;
+                height: 100vh;
+            }
+        </style>
+
+        <script type="text/javascript">
+            let offset = 0;
+            let touch = null;
+
+            const img = new Image();
+            img.src = "img/long_scroll.jpg";
+            img.addEventListener("load", function() {
+                render();
+            });
+
+            function resize() {
+                let canvas = document.querySelector("#main-canvas");
+                let rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+            }
+
+            function render() {
+                let canvas = document.querySelector("#main-canvas");
+                let ctx = canvas.getContext("2d");
+                let scale = Math.max(canvas.width/img.width, canvas.height/img.height);
+
+                let img_width = img.width * scale;
+                let img_height = img.height * scale;
+
+                let real_offset = ((offset % img_height) + img_height) % img_height;
+
+                ctx.drawImage(img, (canvas.width-img_width)/2, real_offset - img_height, img_width, img_height);
+                ctx.drawImage(img, (canvas.width-img_width)/2, real_offset, img_width, img_height);
+            }
+
+            window.addEventListener("DOMContentLoaded", function() {
+                resize();
+                render(); 
+            });
+
+            window.addEventListener("resize", function() {
+                resize();
+                render();
+            });
+
+            window.addEventListener("wheel", function(evt) {
+                offset -= evt.deltaY;
+                render();
+            }, false);
+        </script>
+    </head>
+    <body>
+        <canvas id="main-canvas" style="width: 100%; height: 100%;"></canvas>
+    </body>
+</html>
